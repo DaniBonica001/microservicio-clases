@@ -1,6 +1,7 @@
 package co.analisys.gymclassservice.controller;
 
 import co.analisys.gymclassservice.API.GymClassAPI;
+import co.analisys.gymclassservice.DTO.GymClassOutDTO;
 import co.analisys.gymclassservice.model.GymClass;
 import co.analisys.gymclassservice.service.GymClassService;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,13 @@ public class GymClassController implements GymClassAPI {
     }
 
     @Override
-    public List<GymClass> getAllGymClasses() {
+    public List<GymClassOutDTO> getAllGymClasses() {
         return gymClassService.getAllGymClasses();
+
     }
+    @Override
+    public GymClassOutDTO getGymClassById(Long id) {
+        return gymClassService.findGymClassById(id);
+    }
+
 }
