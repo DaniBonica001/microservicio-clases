@@ -1,11 +1,14 @@
 package co.analisys.gymclassservice.service;
 
 import co.analisys.gymclassservice.DTO.GymClassOutDTO;
+import co.analisys.gymclassservice.DTO.TrainerDTO;
 import co.analisys.gymclassservice.model.GymClass;
 import co.analisys.gymclassservice.repository.GymClassRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,12 +31,15 @@ public class GymClassService {
 
     public GymClassOutDTO findGymClassById(Long id){
         GymClass gymClass = gymClassRepository.findById(id).orElse(null);
-        assert gymClass != null;
-        return mapToGymClassOutDTO(gymClass);
+        if (gymClass != null) {
+            return mapToGymClassOutDTO(gymClass);
+        } else {
+            return null;
+        }
     }
 
     private GymClassOutDTO mapToGymClassOutDTO(GymClass gymClass) {
-        String trainerInfo = "";
+        TrainerDTO trainerInfo = null;
         if (gymClass.getTrainerId() != null) {
             trainerInfo = getTrainerInfoById(gymClass.getTrainerId());
         }
@@ -43,13 +49,24 @@ public class GymClassService {
                 .name(gymClass.getName())
                 .schedule(gymClass.getSchedule())
                 .maxCapacity(gymClass.getMaxCapacity())
-                .trainerInfo(trainerInfo)
+                .trainer(trainerInfo)
                 .build();
     }
 
-    private String getTrainerInfoById(Long trainerId) {
+    private TrainerDTO getTrainerInfoById(Long trainerId) {
         String url = "http://localhost:8083/trainers/" + trainerId;
-        return restTemplate.getForObject(url, String.class);  // Obtén la respuesta como String
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String stringResult = restTemplate.getForObject(url, String.class);  // Obtén la respuesta como String
+
+        TrainerDTO trainer = null;
+        try {
+            trainer = objectMapper.readValue(stringResult, TrainerDTO.class);
+        } catch (JsonProcessingException e) {
+            System.err.println(e.getMessage());
+        }
+        return trainer;
+
     }
 
 

@@ -5,16 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GymClassOutDTO {
-    private Long classId;
+public class TrainerDTO {
+    private Long trainerId;
     private String name;
-    private LocalDateTime schedule;
-    private int maxCapacity;
-    private TrainerDTO trainer;
+    private String speciality;
 }
