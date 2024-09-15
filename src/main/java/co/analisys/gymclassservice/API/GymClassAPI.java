@@ -6,6 +6,7 @@ import co.analisys.gymclassservice.model.GymClass;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface GymClassAPI {
     String BASE_URL = "/gymclasses";
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     @Operation(
             summary = "Crear una clase de gimnasio",
             description = "Este endpoint permite crear una nueva clase de gimnasio proporcionando los detalles de la clase."
@@ -29,6 +31,7 @@ public interface GymClassAPI {
     GymClass createGymClass(@RequestBody GymClass gymClass);
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER', 'ROLE_MEMBER')")
     @Operation(
             summary = "Obtener todas las clases de gimnasio",
             description = "Este endpoint permite obtener una lista de todas las clases de gimnasio disponibles."
@@ -40,6 +43,7 @@ public interface GymClassAPI {
     List<GymClassOutDTO> getAllGymClasses();
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER', 'ROLE_MEMBER')")
     @Operation(
             summary = "Obtener clase de gimnasio por ID",
             description = "Este endpoint permite obtener una clase de gimnasio mediante su ID."
