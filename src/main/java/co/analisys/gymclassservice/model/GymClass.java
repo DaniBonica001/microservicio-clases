@@ -20,7 +20,8 @@ public class GymClass {
     private Long classId;
     private String name;
     private LocalDateTime schedule;
-    private int maxCapacity;
+    @Column(name = "maxCapacity")
+    private Integer maxCapacity;
     private Long trainerId;
 
 }

@@ -1,11 +1,13 @@
 package co.analisys.gymclassservice.service;
 
 import co.analisys.gymclassservice.DTO.GymClassOutDTO;
+import co.analisys.gymclassservice.DTO.NotificationDTO;
 import co.analisys.gymclassservice.DTO.TrainerDTO;
 import co.analisys.gymclassservice.model.GymClass;
 import co.analisys.gymclassservice.repository.GymClassRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,10 +20,20 @@ import java.util.stream.Collectors;
 public class GymClassService {
     private final GymClassRepository gymClassRepository;
     private final RestTemplate restTemplate;
-
+    
+    private RabbitTemplate rabbitTemplate;
 
     public GymClass createGymClass(GymClass gymClass){
-        return gymClassRepository.save(gymClass);
+        GymClass savedGymClass = null;
+        try {
+            savedGymClass =  gymClassRepository.save(gymClass);
+            NotificationDTO notification = new NotificationDTO(gymClass.getTrainerId().toString(), "Se ha creado una nueva clase de gimnasio: " + gymClass.getName());
+            rabbitTemplate.convertAndSend("notificacion.exchange", "notificacion.routingkey", notification);
+        } catch (Exception e) {
+
+        }
+        return savedGymClass;
+
     }
 
     public List<GymClassOutDTO> getAllGymClasses(){
